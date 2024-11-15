@@ -74,22 +74,14 @@ WSGI_APPLICATION = 'BTSproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'BILLTRACK',
-        'USER': 'sa',
-        'PASSWORD': 'S@pdb#39',
-        'HOST': '192.168.0.5',
-        'PORT': '',
+SAP_HANA_CONFIG = {
+    'HOST': '10.0.8.10',
+    'PORT': 30015,  # Default port for HANA
+    'USER': 'B1ADMIN',
+    'PASSWORD': 'HopBwENw4CbUPZkXe!!!',
+    'DBNAME': 'BILLTRACKING',  # Replace with your SAP HANA database name
 
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-            'MARS_Connection': True,
-        },
-    }
 }
-
 
 
 # Password validation
