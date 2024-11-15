@@ -1,0 +1,1226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <link href="{% static 'css/home.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/filterdropdown.css' %}" rel="stylesheet" />
+
+    <title>Bill Listing</title>
+  </head>
+  <body>
+    <div class="home_page">
+      <!-- Header -->
+      <div class="cheader">
+        <a href="{% url 'index' %}" onclick="sessClear()">
+          <img src="{% static 'img/logo.svg' %}" alt="Logo" />
+        </a>
+        <h2>35th Legislature of United States of Virgin Island</h2>
+      </div>
+      <div class="container">
+        <!-- Buttons and Filters -->
+        <div class="filter_head">
+          <div class="left_sec">
+            <ul class="nav nav-tabs" id="mainTab" role="tablist">
+              <button
+                class="btn btn-primary nav-link active"
+                id="billtracking-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#billtracking-tab-pane"
+                type="button"
+                role="tab"
+                aria-controls="billtracking-tab-pane"
+                aria-selected="true"
+              >
+                Bill Tracking
+              </button>
+              <button
+                  class="btn btn-primary nav-link"
+                  type="button"
+                  onclick="window.location.href='{% url 'member' %}'"
+              >
+                  Member Search
+              </button>
+
+            </ul>
+          </div>
+          <div class="right_sec">
+            <div class="ltag" id="searchTag">Legislature</div>
+
+            <div class="input_sec">
+              <div class="cinput">
+                <div class="gropuSec" id="gropuSec">
+                  <input
+                    class="mainInput"
+                    type="text"
+                    class="form-control"
+                    value="{{ bills.0.LegiNo }}"
+                  />
+                  <div id="contentDiv" class="filter-container">
+                    <form method='POST' action="{% url 'index' %}" id="searchForm">
+                    {% csrf_token %}
+                    <div class="filter_innersec">
+                      <!-- Subject Input -->
+                      <div class="sub_input">
+                        <input
+                          type="text"
+                          name="subject"
+                          class="form-control"
+                          placeholder="Subject"
+                        />
+                      </div>
+
+                      <!-- Sponsor Section -->
+                      <div class="spon_sec">
+                        <h2>Sponsor</h2>
+                        <div class="form-section">
+                          <div class="left_sec">
+                            <div class="check_cnt">
+                              <div class="form-check form-check-inline">
+                                   <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="primspon" value="n" />
+                              <input type="hidden" name="legno" value="{{ bills.0.LegiNo }}" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="primarySponsor"
+                                name="primspon"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                                <label
+                                  class="form-check-label"
+                                  for="primarySponsor"
+                                  >Primary Sponsor</label
+                                >
+                              </div>
+                              <div class="form-check form-check-inline">
+                                 <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="spon" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="sponsor"
+                                name="spon"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                                <label class="form-check-label" for="sponsor"
+                                  >Sponsor</label
+                                >
+                              </div>
+                              <div class="form-check form-check-inline">
+                                 <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="cospon" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="coSponsor"
+                                name="cospon"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                                <label class="form-check-label" for="coSponsor"
+                                  >Co-Sponsor</label
+                                >
+                              </div>
+                            </div>
+
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder=""
+                            />
+                          </div>
+                          <div class="right_sec">
+                            <label>Committee</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder=""
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Date Section -->
+                      <div class="date_leg">
+                        <div class="date-section">
+                          <h5>Date</h5>
+                          <div class="check_sec">
+                            <div class="form-check form-check-inline">
+                               <!-- Hidden input for unchecked state -->
+                               <input type="hidden" name="approved" value="n" />
+                               <!-- Checkbox for checked state -->
+                               <input
+                                 type="checkbox"
+                                 class="form-check-input"
+                                 id="approved"
+                                 name="approved"
+                                 value="y"
+                                 onclick="toggleCheckbox(this)"
+                               />
+                              <label class="form-check-label" for="approved"
+                                >Approved</label
+                              >
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="vetoed" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="vetoed"
+                                name="vetoed"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                              <label class="form-check-label" for="vetoed"
+                                >Vetoed</label
+                              >
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="overrdn" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="overridden"
+                                name="overrdn"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                              <label class="form-check-label" for="overridden"
+                                >Overridden</label
+                              >
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="toassgnd" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="assigned"
+                                name="toassgnd"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                              <label class="form-check-label" for="assigned"
+                                >Assigned</label
+                              >
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="tointro" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="introduced"
+                                name="tointro"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                              <label class="form-check-label" for="introduced"
+                                >Introduced</label
+                              >
+                            </div>
+                            <div class="form-check form-check-inline">
+                               <!-- Hidden input for unchecked state -->
+                             <input type="hidden" name="tosnt" value="n" />
+                             <!-- Checkbox for checked state -->
+                             <input
+                               type="checkbox"
+                               class="form-check-input"
+                               id="toSenator"
+                               name="tosnt"
+                               value="y"
+                               onclick="toggleCheckbox(this)"
+                             />
+                              <label class="form-check-label" for="toSenator"
+                                >To Senator</label
+                              >
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="togov" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="toGovernor"
+                                name="togov"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                              <label class="form-check-label" for="toGovernor"
+                                >To Governor</label
+                              >
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="toltgov" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="toLtGovernor"
+                                name="toltgov"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                              <label class="form-check-label" for="toLtGovernor"
+                                >To Lt. Governor</label
+                              >
+                            </div>
+                          </div>
+                          <div class="date_cnt">
+                            <div class="col-6">
+                              <input
+                                type="text"
+                                id="dateFrom"
+                                name="fromdate"
+                                class="form-control datepicker"
+                                placeholder="Date from"
+                                style="font-size:10px"
+                              />
+                            </div>
+                            <div class="col-6 form-control2">
+                              <input
+                                type="text"
+                                id="dateTo"
+                                name="todate"
+                                class="form-control datepicker"
+                                placeholder="Date to"
+                                style="font-size:10px"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Legislature Numbers Section -->
+                        <div class="leg-section">
+                          <h5>Legislature Numbers</h5>
+                          <div class="check_sec">
+                            <div class="form-check form-check-inline">
+                              <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="billnum" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="billNumber"
+                                name="billnum"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                              <label class="form-check-label" for="billNumber"
+                                >Bill Number</label
+                              >
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="actno" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="actNumber"
+                                name="actno"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                              <label class="form-check-label" for="actNumber"
+                                >Act Number</label
+                              >
+                            </div>
+                            <div class="form-check form-check-inline">
+                             <!-- Hidden input for unchecked state -->
+                             <input type="hidden" name="brno" value="n" />
+                             <!-- Checkbox for checked state -->
+                             <input
+                               type="checkbox"
+                               class="form-check-input"
+                               id="brNumber"
+                               name="brno"
+                               value="y"
+                               onclick="toggleCheckbox(this)"
+                             />
+                              <label class="form-check-label" for="brNumber"
+                                >BR Number</label
+                              >
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="amnno" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="amendmentNumber"
+                                name="amnno"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                              <label
+                                class="form-check-label"
+                                for="amendmentNumber"
+                                >Amendment No.</label
+                              >
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="resono" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="resolutionNumber"
+                                name="resono"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                              <label
+                                class="form-check-label"
+                                for="resolutionNumber"
+                                >Resolution No.</label
+                              >
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <!-- Hidden input for unchecked state -->
+                              <input type="hidden" name="govrrno" value="n" />
+                              <!-- Checkbox for checked state -->
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="governorsNumber"
+                                name="govrrno"
+                                value="y"
+                                onclick="toggleCheckbox(this)"
+                              />
+                              <label
+                                class="form-check-label"
+                                for="governorsNumber"
+                                >Governors No.</label
+                              >
+                            </div>
+                          </div>
+
+                          <div class="numinput">
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="Number"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Actions -->
+                      <div class="fotter_sec">
+                        <a class="btn btn-outline-secondary me-2" href="{% url "index" %}" onclick="sessClear()">
+                            Clear Filter
+                        </a>                        
+                        <button class="btn btn-primary">
+                          <img src="{% static 'img/search-line.svg' %}" /> Search
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                    <div class="moreopt" id="hideButton">
+                      Hide Options
+                      <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="moreopt" id="moreButton">
+                  More Options
+                  <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                </div>
+              </div>
+
+              <button class="btn btn-primary serchbtn">
+                <img src="{% static 'img/search-line.svg' %}" />Search
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Main tab contents -->
+        <div class="tab-content" id="mainTabContent">
+          <!-- Bill-tracking-tab-content -->
+          <div
+            class="billSecTab tab-pane fade show active"
+            id="billtracking-tab-pane"
+            role="tabpanel"
+            aria-labelledby="billtracking-tab"
+            tabindex="0"
+          >
+            <!-- Bill-tracking Filter and Sort Section -->
+            <div class="filter_sub_head">
+              <div class="left_sec">
+                <button
+                  class="btn btn-outline-primary sfilter_btn"
+                  data-bs-toggle="modal"
+                  data-bs-target="#staticBackdrop"
+                >
+                  Show Filter
+                </button>
+                <div class="pagination">
+                  <span>1-4 of 530,29</span>
+                  <button class="btn btn-outline-secondary ls">
+                    <img src="{% static 'img/arrow-left-s-line.svg' %}" />
+                  </button>
+                  <input
+                    type="text"
+                    value="1"
+                    class="form-control d-inline-block"
+                    style="width: 55px;"
+                  />
+
+                  <span>of 1325 pages</span>
+                  <button class="btn btn-outline-secondary mx-2">
+                    <img src="{% static 'img/arrow-right-s-line.svg' %}" />
+                  </button>
+                </div>
+              </div>
+              <div class="right_sec">
+                <div class="view_sec">
+                  <label for="view" class="form-label">View</label>
+                  <ul class="nav nav-tabs" id="billSec-subTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                      <button
+                        class="nav-link active"
+                        id="bill-grid-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#billgrid-tab-pane"
+                        type="button"
+                        role="tab"
+                        aria-controls="billgrid-tab-pane"
+                        aria-selected="true"
+                      >
+                        <img src="{% static 'img/grid.svg' %}" class="inactive" alt="grid" />
+                        <img
+                          src="{% static 'img/grid-active.svg' %}"
+                          class="active"
+                          alt="grid-active"
+                        />
+                      </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button
+                        class="nav-link"
+                        id="bill-table-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#billtable-tab-pane"
+                        type="button"
+                        role="tab"
+                        aria-controls="billtable-tab-pane"
+                        aria-selected="false"
+                      >
+                        <img src="{% static 'img/table.svg' %}" class="inactive" alt="grid" />
+                        <img
+                          src="{% static 'img/table-active.svg' %}"
+                          class="active"
+                          alt="grid-active"
+                        />
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                <div class="sort_sec">
+                  <label for="sort" class="form-label">Sort by</label>
+                  <select id="sort" class="form-select">
+                    <option>Number Descending</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bill-tracking -Cards -->
+            <div class="bill-section">
+              <div class="tab-content" id="billSec-subTabContent">
+                <div
+                  class="tab-pane fade show active"
+                  id="billgrid-tab-pane"
+                  role="tabpanel"
+                  aria-labelledby="billgrid-tab"
+                  tabindex="2"
+                >
+                <div class="row">
+                  {% for bill in bills %}
+                  
+                    {% if forloop.counter0|divisibleby:2 and not forloop.first %}
+                      </div><div class="row">
+                    {% endif %}
+                    
+                    <div class="col-md-6 mb-4">
+                      <div class="bill-card">
+                        <div class="bhead">
+                          <h5 > <a href="{% url 'bill_detail' bill.DocEntry %}">Bill No - {{bill.BRNumber|default:''}}</a></h5> 
+                          <span class="bill-badge">{{ bill.RequestType }}</span>
+                        </div>
+                        <p>
+                          {{ bill.Subjct }}
+                        </p>
+                        <div class="introced">
+                          Introduced on: <span>{{ bill.IntroDt }}</span>
+                        </div>
+                        
+                        <div class="sponce_sec">
+                          Primary Sponsor: <span>{{ bill.PrimarySpon }}, </span> Sponsor:
+                          <span>{{bill.Sponsor}}, </span> 
+                          {% if bill.SpNos %}
+                          <a href="#" data-docentry ={{bill.DocEntry}} class="spnos-link" data-spnos="{{ bill.SpNos }}">{{ bill.SpNos }}</a> 
+                          {% else %}
+                              <span class="disabled-text">0</span> <!-- Or you can simply show a text instead -->
+                          {% endif %},
+                          Co-sponsor: <span>{{bill.CoSponsor}}, 
+                          {% if bill.CoSpNos %}
+                              <a href="#" class="cospnos-link" data-docentry="{{ bill.DocEntry }}">{{ bill.CoSpNos }}</a>
+                          {% else %}
+                              <span class="disabled-text">0</span> <!-- Or you can simply show a text instead -->
+                            {% endif %}   
+                         <br> Act No.:
+                         <span>{% if bill.ActNo %}<a href="{% url 'pdf' %}" target="_blank" rel="noopener noreferrer">{{ bill.ActNo }}</a>
+                          {% else %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}</span>
+                          Amendment No.:<span>{% if bill.AmndNo %}<a href="">{{ bill.AmndNo }}</a>{% else %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}</span>
+                          Resolution No.:<span>{% if bill.ResoNo %}<a href="">{{ bill.ResoNo }}</a>{% else %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}</span><br>
+                          Governors No.:<span>{% if bill.GovNo %}<a href="">{{ bill.GovNo }}</a>{% else %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}</span>
+                        </div>
+                        
+                        <div class="status_sec">
+                          <strong>Status:</strong>
+                
+                          <!-- Loop through other_bills and match on DocEntry -->
+                          {% for other_bill in status %}               
+                            {% if other_bill.DocEntry == bill.DocEntry %}
+                              <div class="bill-status {% if other_bill.LastAct == 'Y' %}active{% endif %}">
+                                {{ other_bill.Stat }}<span>{{ other_bill.StatDt|default:"" }}</span>
+                              </div>
+                            {% endif %}
+                          {% endfor %}
+                        </div>
+                        
+                      </div>
+                    </div>
+                  
+                  {% endfor %}
+                </div>
+                
+                
+                </div>
+                <div
+                  class="tab-pane fade"
+                  id="billtable-tab-pane"
+                  role="tabpanel"
+                  aria-labelledby="billtable-tab"
+                  tabindex="3"
+                >
+                  <div class="bill-table-wrapper">
+                    <table class="bill-table table table-hover">
+                      <thead>
+                        <tr>
+                          <th scope="col" class="col-md-1 ps-3">Leg. No.</th>
+                          <th scope="col" class="col-md-2 ps-3">Bill No</th>
+                          <th scope="col" class="col-md-3">Subject</th>
+                          <th scope="col" class="col-md-2">Introduced On</th>
+                          <th scope="col" class="col-md-2">Status</th>
+                          <th scope="col" class="col-md-2">Last Action Date</th>
+                        </tr>
+                      </thead>
+                    </table>
+                    <div class="table-scroll">
+                      <table class="bill-table table table-hover">
+                        <tbody>
+                          {% for bill in bills %}
+                            <tr>
+                              <td class="col-md-1 ps-3">{{bill.LegiNo}}</td>
+                              <td class="col-md-2 bill-no ps-3"><a href="{% url 'bill_detail' bill.DocEntry %}">{{bill.BRNumber}}</a></td>
+                              <td class="col-md-3">
+                                {{bill.Subjct}}
+                              </td>
+                              <td class="col-md-2 ps-1">{{bill.IntroDt}}</td>
+                              <td class="col-md-2 ps-1 bill-status approved">
+                                {{bill.LastAct}}
+                              </td>
+                              <td class="col-md-2 ps-1">{{bill.LastActDt}}</td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Member-Search-tab-content -->
+      <div
+        class="modal fade"
+        id="staticBackdrop"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="staticBackdropLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered search_filter_modal">
+          <div class="modal-content">
+            <form method="POST" action="{% url "index" %}" id="modalcontent">
+            {% csrf_token %}
+            <div class="modal-header">
+              <h1 class="modal-title" id="staticBackdropLabel">
+                Search Filter
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="date-section">
+                <h5>Dates</h5>
+                <div class="check_sec">
+                  <div class="form-check form-check-inline">
+                    <!-- Hidden input for unchecked state -->
+                    <input type="hidden" name="legno" value={{ bills.0.LegiNo }} />
+                    <input type="hidden" name="approved" value="n" />
+                    <input type="hidden" name="billnum" value='n' />
+                    <input type="hidden" name="actno" value="n" />
+                    <input type="hidden" name="brno" value="n" />
+                    <input type="hidden" name="amno" value="n" />
+                    <input type="hidden" name="resono" value="n" />
+                    <input type="hidden" name="goverrno" value="n" />
+                    
+                    <!-- Checkbox for checked state -->
+                    <input type="checkbox" class="form-check-input" name="approved" id="approved" value="y" onclick="toggleCheckbox(this)" />
+                    <label class="form-check-label" for="approved"
+                      >Approved</label
+                    >
+                  </div>
+                  <div class="form-check form-check-inline">
+                      <!-- Hidden input for unchecked state -->
+                      <input type="hidden" name="vetoed" value="n" />
+                      <!-- Checkbox for checked state -->
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="vetoed"
+                      name="vetoed"
+                      value="y"
+                      onclick="toggleCheckbox(this)"
+                    />
+                    <label class="form-check-label" for="vetoed">Vetoed</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <!-- Hidden input for unchecked state -->
+                    <input type="hidden" name="overrdn" value="n" />
+                    <!-- Checkbox for checked state -->
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="overridden"
+                      name="overrdn"
+                      value="y"
+                      onclick="toggleCheckbox(this)"
+                    />
+                    <label class="form-check-label" for="overridden"
+                      >Overridden</label
+                    >
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <!-- Hidden input for unchecked state -->
+                    <input type="hidden" name="toassgnd" value="n" />
+                    <!-- Checkbox for checked state -->
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="assigned"
+                      name="toassgnd"
+                      value="y"
+                      onclick="toggleCheckbox(this)"
+                    />
+                    <label class="form-check-label" for="assigned"
+                      >Assigned</label
+                    >
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <!-- Hidden input for unchecked state -->
+                    <input type="hidden" name="tointro" value="n" />
+                    <!-- Checkbox for checked state -->
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="introduced"
+                       name="tointro"
+                       value="y"
+                       onclick="toggleCheckbox(this)"
+                    />
+                    <label class="form-check-label" for="introduced"
+                      >Introduced</label
+                    >
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <!-- Hidden input for unchecked state -->
+                    <input type="hidden" name="tosnt" value="n" />
+                    <!-- Checkbox for checked state -->
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="toSenator"
+                      name="tosnt"
+                      value="y"
+                      onclick="toggleCheckbox(this)"
+                    />
+                    <label class="form-check-label" for="toSenator"
+                      >To Senator</label
+                    >
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <!-- Hidden input for unchecked state -->
+                    <input type="hidden" name="togov" value="n" />
+                    <!-- Checkbox for checked state -->
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="toGovernor"
+                      name="togov"
+                      value="y"
+                      onclick="toggleCheckbox(this)"
+
+                    />
+                    <label class="form-check-label" for="toGovernor"
+                      >To Governor</label
+                    >
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <!-- Hidden input for unchecked state -->
+                    <input type="hidden" name="toltgov" value="n" />
+                    <!-- Checkbox for checked state -->
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="toLtGovernor"
+                      name="toltgov"
+                      value="y"
+                      onclick="toggleCheckbox(this)"
+                    />
+                    <label class="form-check-label" for="toLtGovernor"
+                      >To Lt. Governor</label
+                    >
+                  </div>
+                </div>
+                <div class="date_cnt">
+                  <div class="col-6">
+                    <input
+                      type="text"
+                      id="dateFrom"
+                      name="fromdate"
+                      class="form-control datepicker"
+                      placeholder="Date from"
+                    />
+                  </div>
+                  <div class="col-6 form-control2">
+                    <input
+                      type="text"
+                      id="dateTo"
+                      name="todate"
+                      class="form-control datepicker"
+                      placeholder="Date to"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="spon_sec">
+                <h2>Sponsor</h2>
+                <div class="form-section">
+                  <div class="left_sec">
+                    <div class="check_cnt">
+                      <div class="form-check form-check-inline">
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          id="primarySponsor"
+                          name="primspon"
+                          value="y"
+                          onclick="toggleCheckbox(this)"
+                        />
+                        <label class="form-check-label" for="primarySponsor"
+                          >Primary Sponsor</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          id="sponsor"
+                        />
+                        <label class="form-check-label" for="sponsor"
+                          >Sponsor</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          id="coSponsor"
+                          name="cospon"
+                          value="y"
+                          onclick="toggleCheckbox(this)"
+                        />
+                        <label class="form-check-label" for="coSponsor"
+                          >Co-Sponsor</label
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="right_sec">
+                    <div class="s_select">
+                      <label for="sort" class="form-label">Sponsors</label>
+                      <select id="sort" class="form-select">
+                        <option>Search here...</option>
+                      </select>
+                    </div>
+                    <div class="s_select">
+                      <label for="sort" class="form-label">Committee</label>
+                      <select id="sort" class="form-select">
+                        <option>Search here...</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="popupModal" tabindex="-1" aria-labelledby="popupModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="width:300px;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="popupModalLabel">Sponsors</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="result">Loading...</div> <!-- Dynamic result will be loaded here -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary closebtn" data-bs-dismiss="modal" style="border-radius: 5.491px; background: #255ea9; color: #fff;
+              font-family: var(--base-font-family);  font-size: 9.609px; font-style: normal; font-weight: 500; line-height: normal; letter-spacing: -0.192px;
+              border: none; display: flex;  align-items: center;">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="popupModal2" tabindex="-1" aria-labelledby="popupModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="width:300px;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="popupModalLabel">Co-Sponsors</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="result2">Loading...</div> <!-- Dynamic result will be loaded here -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary closebtn" data-bs-dismiss="modal" style="border-radius: 5.491px; background: #255ea9; color: #fff;
+              font-family: var(--base-font-family);  font-size: 9.609px; font-style: normal; font-weight: 500; line-height: normal; letter-spacing: -0.192px;
+              border: none; display: flex;  align-items: center;">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        // Handle click event on links with class 'spnos-link'
+        $('.spnos-link').click(function(event) {
+          event.preventDefault(); // Prevent the default behavior of the link
+      
+          // Get the SpNos from the data attribute
+          var spnos = $(this).data('docentry');
+      
+          // Make an AJAX request to the Django view, passing SpNos as a query parameter
+          $.ajax({
+            url: '/get_data/', // Your Django view URL
+            type: 'GET',
+            data: { 'SpNos': spnos },
+            success: function(data) {
+              // Start building the HTML for the table
+              var tableHTML = '<table class="table table-bordered"><tbody>';
+      
+              // Check if data.result is an array or a single item
+              if (Array.isArray(data.result) && data.result.length > 1) {
+                // Loop through each item and create a row for each
+                data.result.forEach(function(item) {
+                  tableHTML += '<tr><td style="padding: .2rem .5rem;">' + item + '</td></tr>';
+                });
+              } else if (data.result) {
+                // If it's a single item, create a single row
+                tableHTML += '<tr><td>' + data.result + '</td></tr>';
+              } else if (data.error) {
+                // Show an error message if there's an error
+                tableHTML += '<tr><td class="alert alert-danger">' + data.error + '</td></tr>';
+              }
+      
+              // Close the table tags
+              tableHTML += '</tbody></table>';
+      
+              // Set the generated HTML to the result div
+              $('#result').html(tableHTML);
+      
+              // Show the Bootstrap modal
+              $('#popupModal').modal('show');
+            },
+            error: function(xhr, status, error) {
+              $('#result').html('<div class="alert alert-danger">Error: ' + error + '</div>');
+            }
+          });
+        });
+      });
+
+      //Co-Sponsor Popup section
+      $(document).ready(function() {
+        // Handle click event on links with class 'spnos-link'
+        $('.cospnos-link').click(function(event) {
+          event.preventDefault(); // Prevent the default behavior of the link
+      
+          // Get the SpNos from the data attribute
+          var cospnos = $(this).data('docentry');
+      
+          // Make an AJAX request to the Django view, passing SpNos as a query parameter
+          $.ajax({
+            url: '/getcosp_data/', // Your Django view URL
+            type: 'GET',
+            data: { 'CoSpNos': cospnos },
+            success: function(data) {
+              // Start building the HTML for the table
+              var tableHTML = '<table class="table table-bordered"><tbody>';
+      
+              // Check if data.result is an array or a single item
+              if (Array.isArray(data.result) && data.result.length > 1) {
+                // Loop through each item and create a row for each
+                data.result.forEach(function(item) {
+                  tableHTML += '<tr><td style="padding: .2rem .5rem;">' + item + '</td></tr>';
+                });
+              } else if (data.result) {
+                // If it's a single item, create a single row
+                tableHTML += '<tr><td>' + data.result + '</td></tr>';
+              } else if (data.error) {
+                // Show an error message if there's an error
+                tableHTML += '<tr><td class="alert alert-danger">' + data.error + '</td></tr>';
+              }
+      
+              // Close the table tags
+              tableHTML += '</tbody></table>';
+      
+              // Set the generated HTML to the result div
+              $('#result2').html(tableHTML);
+      
+              // Show the Bootstrap modal
+              $('#popupModal2').modal('show');
+            },
+            error: function(xhr, status, error) {
+              $('#result2').html('<div class="alert alert-danger">Error: ' + error + '</div>');
+            }
+          });
+        });
+      });
+      
+      $(document).ready(function () {
+        $(".datepicker").datepicker({
+          format: "mm/dd/yyyy", // Date format, you can change to your preferred format
+          autoclose: true, // Automatically close the picker after selecting a date
+          todayHighlight: true, // Highlight today’s date
+        });
+        $("#moreButton").click(function () {
+          $("#contentDiv").slideToggle();
+          $("#gropuSec").toggleClass("highlight");
+        });
+        $("#hideButton").click(function () {
+          $("#contentDiv").slideToggle();
+          $("#gropuSec").toggleClass("highlight");
+        });
+
+        // modifying content based on Main tab change
+        const myTab = document.getElementById("mainTab");
+        const moreFilterBtn = document.getElementById("moreButton");
+
+        myTab.addEventListener("shown.bs.tab", function (event) {
+          const newActiveTabId = event.target.id;
+          const searchTag = document.getElementById("searchTag");
+          const searchbar = document.getElementById("inp");
+          if (newActiveTabId === "billtracking-tab") {
+            searchTag.textContent = "Legislature";
+            moreFilterBtn.style.display = "block";
+            searchbar.value = "{{ bills.0.LegiNo }}";
+
+          } else if (newActiveTabId === "membersearch-tab") {
+            searchTag.textContent = "Member Search";
+
+            {% for mem in member|slice:":1" %}
+            searchbar.value = "{{mem.CardName}}";
+
+            {% endfor %}
+            moreFilterBtn.style.display = "none";
+          }
+        });
+      });
+      
+      function toggleCheckbox(checkbox) {
+        if (checkbox.checked) {
+          checkbox.value = "y";  // Set value to "y" when checked
+        } else {
+          checkbox.value = "n";  // Set value to "n" when unchecked
+        }
+      }
+
+          document.addEventListener("DOMContentLoaded", function () {        
+        // Function to save form data to session storage
+        function saveFormData() {
+          const formElements = document.querySelectorAll("#contentDiv input, #contentDiv select");
+          formElements.forEach((element) => {
+            // Save the value of each input field in session storage
+            if (element.type === "checkbox") {
+              sessionStorage.setItem(element.name, element.checked ? "y" : "n");
+            } else {
+              sessionStorage.setItem(element.name, element.value);
+            }
+          });
+        }
+
+        // Function to load form data from session storage
+        function loadFormData() {
+          const formElements = document.querySelectorAll("#contentDiv input, #contentDiv select");
+          formElements.forEach((element) => {
+            // Get the stored value from session storage
+            const storedValue = sessionStorage.getItem(element.name);
+            if (storedValue !== null) {
+              if (element.type === "checkbox") {
+                element.checked = storedValue === "y";
+              } else {
+                element.value = storedValue;
+              }
+            }
+          });
+        }
+
+        // Save form data on submit
+        const form = document.querySelector("form");
+        if (form) {
+          form.addEventListener("submit", function (event) {
+            saveFormData();  // Save the form data
+          });
+        }
+
+        // Load form data on page load
+        loadFormData();
+
+      });
+        
+    function sessClear() {
+      // Example: Clear session storage
+      sessionStorage.clear();
+  
+      // You can also clear specific session keys if needed:
+      // sessionStorage.removeItem('yourKey');
+  
+      // Optionally log for debugging
+      console.log('Session cleared');
+  
+      // You can add more actions as needed
+  }
+      document.addEventListener("DOMContentLoaded", function () {
+    // Function to save form data to session storage
+    function saveFormData(formId) {
+      const formElements = document.querySelectorAll(`#${formId} input, #${formId} select`);
+      formElements.forEach((element) => {
+        if (element.type === "checkbox") {
+          // Save checkbox states (checked/unchecked)
+          sessionStorage.setItem(element.name, element.checked ? "y" : "n");
+        } else {
+          // Save the value for other input types (text, select)
+          sessionStorage.setItem(element.name, element.value);
+        }
+      });
+    }
+  
+
+      // Function to load form data from session storage
+      function loadFormData(formId) {
+        const formElements = document.querySelectorAll(`#${formId} input, #${formId} select`);
+        formElements.forEach((element) => {
+          const storedValue = sessionStorage.getItem(element.name);
+          if (storedValue !== null) {
+            if (element.type === "checkbox") {
+              element.checked = storedValue === "y";
+            } else {
+              element.value = storedValue;
+            }
+          }
+        });
+      }
+
+      // Save form data on modal form submit
+      const modalForm = document.querySelector("#modalcontent");
+      if (modalForm) {
+        modalForm.addEventListener("submit", function () {
+          saveFormData(modalForm.id);  // Save modal form data
+        });
+      }
+
+      // Load form data when modal is shown
+      const modal = document.querySelector("modalcontent");
+      if (modal) {
+        modal.addEventListener("shown.bs.modal", function () {
+          loadFormData(modalForm.id);  // Load modal form data when modal opens
+        });
+      }
+
+      // Also load form data on page load in case the modal is open
+      loadFormData(modalForm.id);
+
+      });
+
+    </script>
+  </body>
+</html>
